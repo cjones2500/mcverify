@@ -4,8 +4,8 @@ titles casl.dat
 set bank TDMM 1 word 14 to 0
 set bank TQIO 3 word 19 to 0
 set bank TQIO 3 word 5 to 1
-titles anxx_nu_0000020674_p3.dat
-titles DQXX_0000020674.dat
+titles ../anxx_nu_0000020674_p3.dat
+titles ../DQXX_0000020674.dat
 file QIO 1 test.root ***this appears to be the output file from ROOT
  
 $mcrun 20675	***this also appears to be standard...

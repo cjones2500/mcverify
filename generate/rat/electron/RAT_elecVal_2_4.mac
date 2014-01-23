@@ -1,0 +1,26 @@
+/PhysicsList/OmitHadronicProcesses true 
+/PhysicsList/OmitMuonicProcesses true 
+/PhysicsList/SelectCerenkovProcess SNOMAN 
+/rat/db/set DETECTOR geo_file "geo/snoman_salt.geo" 
+/rat/db/set DAQ n100_hi_thresh 21.0 
+/rat/db/set DAQ n100_med_thresh 16.0 
+/rat/db/set DAQ n100_lo_thresh 11.0 
+/rat/db/set DAQ n20_thresh 16.0 
+/rat/db/set DAQ n20_lb_thresh 11.0 
+/rat/db/set DAQ eshi_thresh 120.0 
+/rat/db/set DAQ eslo_thresh 60.0 
+/run/initialize 
+/rat/proc frontend
+/rat/proc trigger
+/rat/proc eventbuilder
+/rat/proc calibratePMT
+/rat/proc count
+/rat/procset update 100
+/rat/proc outroot
+/rat/procset file "RAT_elecVal_2_4.root" 
+/generator/add combo gun:point:poisson
+/generator/vtx/set e- 0 0 0 2.714
+/generator/pos/set 1888.1 -4638.1 -1576.8
+/generator/rate/set 1.0 
+/rat/run/start 10000
+exit 

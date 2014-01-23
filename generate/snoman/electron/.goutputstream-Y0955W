@@ -1,0 +1,124 @@
+import os 
+import sys,random,math
+import time as t_clock
+
+##Python script to make several RAT macros for validation 
+numFiles = 10	
+
+minEnergy = float(1.0) #energy in MeV
+maxEnergy = float(7.0) #energy in MeV
+
+numELoops = 6   #number of different energy values to test
+numPosLoops = 1 ##Generate electron events at 100 different positions 
+
+sourceName = "elecVal"
+
+def generateRandomXYZ():
+        totalRadius = 6000
+        val = 0
+        while (val ==0):
+                x = random.uniform(-6000, 6000)
+                y = random.uniform(-6000, 6000)
+                z = random.uniform(-6000, 6000)
+                testVal = math.sqrt(x*x + y*y + z*z)
+                if(testVal < totalRadius):
+                        break
+        return x,y,z
+
+def main():
+        for energyLoop in range(0,numELoops):
+
+                if (energyLoop == 0):
+                        energyMev = minEnergy 
+                else:
+                        energyMev = minEnergy + energyLoop*(maxEnergy-minEnergy)/(1.0*numELoops)
+                        
+                for posloop in range(0,numPosLoops):
+                        xVal,yVal,zVal =  generateRandomXYZ()
+                        writeRatMacro(sourceName,energyMev,posloop,xVal,yVal,zVal)
+                        writeSnomanMacro(sourceName,energyMev,posloop,xVal,yVal,zVal)
+
+def writeRatMacro(sourceName,energyVal,posVal,xVal,yVal,zVal):
+             
+         RatMacroName ="RAT_" + sourceName + "_" + str(int(energyVal)) + "_" + str(posVal) + ".mac"  
+         RatRootFile = "RAT_" + sourceName + "_" + str(int(energyVal)) + "_" + str(posVal) + ".root"
+         f = open(RatMacroName,'w')
+         f.write('/PhysicsList/OmitHadronicProcesses true \n')
+         f.write('/PhysicsList/OmitMuonicProcesses true \n')
+         f.write('/PhysicsList/SelectCerenkovProcess SNOMAN \n')
+         f.write('/rat/db/set DETECTOR geo_file "geo/snoman_salt.geo" \n')
+         f.write('/run/initialize \n')
+         f.write('/rat/proc frontend\n')
+         f.write('/rat/proc trigger\n')
+         f.write('/rat/proc eventbuilder\n')
+         f.write('/rat/proc calibratePMT\n')
+         f.write('/rat/proc count\n')
+         f.write('/rat/procset update 100\n')
+         f.write('/rat/proc outroot\n')
+         f.write('/rat/procset file "' + RatRootFile +'\n')
+         f.write('/generator/add combo gun:point:poisson\n')
+         f.write('/generator/vtx/set e- 0 0 0 '+ str(energyVal) +' \n')
+         f.write('/generator/pos/set '+str(round(xVal,1)) +' '+ str(round(yVal,1)) + ' ' + str(round(zVal,1)) + ' \n')
+         f.write('/generator/rate/set 1.0 \n')
+         f.write('/rat/run/start 10')
+         f.write('\nexit \n')
+         f.close()
+
+def writeSnomanMacro(sourceName,energyVal,posVal,xVal,yVal,zVal):
+         SnomanMacroName ="SNOMAN_" + sourceName + "_" + str(int(energyVal)) + "_" + str(posVal) + ".cmd"  
+         SnomanRootFile = "SNOMAN_" + sourceName + "_" + str(int(energyVal)) + "_" + str(posVal) + ".root" 
+         adjustedEnergyVal = energyVal + 0.511
+	 #Convert the values to cm for SNOMAN 
+	 xVal = xVal/10.0 
+	 yVal = yVal/10.0
+	 zVal = zVal/10.0
+         f = open(SnomanMacroName,'w')
+         f.write('titles qio_data.dat \n')
+         f.write('titles dmm.dat \n')
+         f.write('titles casl.dat \n')
+         f.write('set bank TDMM 1 word 14 to 0 \n')
+         f.write('set bank TQIO 3 word 19 to 0 \n')
+         f.write('set bank TQIO 3 word 5 to 1 \n')
+         f.write('titles ../anxx_nu_0000020674_p3.dat \n')
+         f.write('titles ../DQXX_0000020674.dat \n')
+         f.write('file QIO 1 '+SnomanRootFile+' \n')
+         f.write('$mcrun 20675 \n')   
+         f.write('$mc_event_rate 50.00 $per_sec \n')
+         f.write('$mc_gen_run_cond $on \n')
+         f.write('$mc_num_seed_vx 1 \n')
+         f.write('$mc_interaction_type   $start$$e_minus \n')
+         f.write('$mc_position           $pos_point '+str(round(xVal,1))+' '+str(round(yVal,1))+' '+str(round(zVal,1))+' \n')
+         f.write('$mc_direction          $dir_isotropic \n')
+         f.write('$mc_energy $en_mono  '+str(adjustedEnergyVal)+' \n')
+         f.write('$mc_time  $tim_fixed 0.0 \n')
+         f.write('$mc_miscellaneous  $misc_random_pol\n')
+         f.write('$num_events 1000 \n')
+         f.write('define event_loop \n')
+         f.write('call mco \n')
+         f.write('call ftt \n')
+         f.write('call ftp \n')
+         f.write('call ftu \n')
+         f.write('call qio(2) \n')
+         f.write('quit_event \n')
+         f.write('end_def \n')
+         f.write("$pegs_file  'pegs4_10.dat' \n\n\n")
+         f.write('$egs4_ds  $on \n')
+         f.write('$killvx  0 \n')
+         f.write('$mcdaq_ztell    $off \n')
+         f.write('$fresnel_scat    $on \n')
+         f.write('$rayleigh_scat     $on \n')
+         f.write('$photodisintegration   $on \n')
+
+         f.write('@geom_belly_plate_rope \n')
+         f.write('$max_cer_ge_errors 20 \n')
+         f.write('$3d_pmt \n')
+         f.write('$mc_drift_attenuation $off *Me \n')
+         f.write('$mc_drift_pmt_coll $off *Me \n')
+         f.write('$pmt_var $off *Me \n\n\n')
+
+         f.write('@load_salt_settings \n')
+         f.write('@run_snodb \n')
+         f.close()
+
+main()
+
