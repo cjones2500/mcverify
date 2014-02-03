@@ -1,7 +1,12 @@
+/rat/db/set DETECTOR pmt_info_file "pmt/snoman.ratdb"
+/rat/db/load snoman/PMT_DQXX.ratdb
+/rat/db/load snoman/OPTICS.ratdb
+/rat/db/load snoman/MATERIALS.ratdb
+/PhysicsList/SelectOpRayleighProcess SNOMAN
 /PhysicsList/OmitHadronicProcesses true 
 /PhysicsList/OmitMuonicProcesses true 
 /PhysicsList/SelectCerenkovProcess SNOMAN 
-/rat/db/set DETECTOR geo_file "geo/snoman_salt.geo" 
+/rat/db/set DETECTOR geo_file "snoman/salt.geo"
 /rat/db/set DAQ n100_hi_thresh 21.0 
 /rat/db/set DAQ n100_med_thresh 16.0 
 /rat/db/set DAQ n100_lo_thresh 11.0 
@@ -20,7 +25,7 @@
 /rat/procset file "RAT_gammaVal_6_10.root"
 /generator/add combo gun:point:poisson
 /generator/vtx/set gamma 0 0 0 6.143 
-/generator/pos/set -2438.1 -3350.1 -1368.3 
+/generator/pos/set -4411.4 2643.2 2630.9 
 /generator/rate/set 1.0 
 /rat/run/start 10000
 exit 

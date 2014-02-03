@@ -30,6 +30,11 @@ void
 ExtractNhit( char* lpInFile,
 			 char* lpOutFile )
 {
+  
+  std::cout << "InFile: " << lpInFile << std::endl;
+  std::cout << "OutFile: " << lpOutFile << std::endl;
+
+
   // Load the root file first
   TFile *file = new TFile( lpInFile );
   QTree *tree = (QTree*)file->Get( "T" );
@@ -46,7 +51,7 @@ ExtractNhit( char* lpInFile,
   for( iLoop = 0; iLoop < numMCEvents; iLoop++ )
   {
     if( iLoop % 100 == 0 )
-      cout << iLoop << " finished at " << time( NULL ) - codeStart << endl;
+      //cout << iLoop << " finished at " << time( NULL ) - codeStart << endl;
 
     tree->GetEntry( iLoop );
 
@@ -57,6 +62,10 @@ ExtractNhit( char* lpInFile,
   outFile.cd();
   nHits->Write();
   outFile.Close();
+  
+  // delete file;
+  delete qEV;
+  delete nHits;
 }
 
 void

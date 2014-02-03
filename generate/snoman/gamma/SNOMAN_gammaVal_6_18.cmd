@@ -12,9 +12,9 @@ $mc_event_rate 50.00 $per_sec
 $mc_gen_run_cond $on 
 $mc_num_seed_vx 1 
 $mc_interaction_type   $start$$gamma 
-$mc_position           $pos_point 224.2 -319.83 -353.48 
+$mc_position           $pos_point -126.44 36.47 -536.41 
 $mc_direction          $dir_isotropic 
-$mc_energy $en_mono  6.1 
+$mc_energy $en_mono  6.143 
 $mc_time  $tim_fixed 0.0 
 $mc_miscellaneous  $misc_random_pol
 $num_events 10000 

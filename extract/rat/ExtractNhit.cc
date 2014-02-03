@@ -31,6 +31,10 @@ void
 ExtractNhit( const char* inFile,
              const char* outFile )
 {
+  
+  std::cout << "InFile: " << inFile << std::endl;
+  std::cout << "OutFile: " << outFile << std::endl;
+  
   // Load the root file first
   RAT::DS::Root* rDS;
   RAT::DS::Run* rRun;
@@ -43,7 +47,7 @@ ExtractNhit( const char* inFile,
   for( int iEvent = 0; iEvent < tree->GetEntries(); iEvent++ )
     {
       if( iEvent % 100 == 0 )
-        cout << iEvent << " finished at " << time( NULL ) - codeStart << endl;
+        //cout << iEvent << " finished at " << time( NULL ) - codeStart << endl;
       tree->GetEntry( iEvent );
       for( int iEV = 0; iEV < rDS->GetEVCount(); iEV++ )
         FillHistogram( rDS->GetEV( iEV ), nHits );
@@ -53,6 +57,8 @@ ExtractNhit( const char* inFile,
   outputFile.cd();
   nHits->Write();
   outputFile.Close();
+  
+  delete nHits;
 }
 
 void
